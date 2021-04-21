@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class LogMgmtConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'log_mgmt'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "log_mgmt"

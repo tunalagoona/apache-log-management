@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Parser
+from .models import ApacheLogs
 
 
 class ParserAdmin(admin.ModelAdmin):
@@ -27,4 +27,4 @@ class ParserAdmin(admin.ModelAdmin):
     )
 
 
-admin.site.register(Parser, ParserAdmin)
+admin.site.register(ApacheLogs, ParserAdmin)
