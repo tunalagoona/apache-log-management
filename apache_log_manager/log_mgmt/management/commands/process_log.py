@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from ...log_processor import LogProcessor
 
 logging.basicConfig(
-    filename="log/log.log", format="%(levelname)s %(asctime)s: %(message)s", level=logging.INFO, filemode="w+"
+    filename="data/log.log", format="%(levelname)s %(asctime)s: %(message)s", level=logging.INFO, filemode="w+"
 )
 
 
