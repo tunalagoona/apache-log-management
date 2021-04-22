@@ -6,32 +6,32 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('log_mgmt', '0001_initial'),
+        ("log_mgmt", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='parser',
-            name='log_data',
+            model_name="parser",
+            name="log_data",
         ),
         migrations.AddField(
-            model_name='parser',
-            name='log_date',
-            field=models.DateTimeField(default=None, verbose_name='log date'),
+            model_name="parser",
+            name="log_date",
+            field=models.DateTimeField(default=None, verbose_name="log date"),
         ),
         migrations.AddField(
-            model_name='parser',
-            name='referer',
-            field=models.CharField(default=None, max_length=200, verbose_name='Referer'),
+            model_name="parser",
+            name="referer",
+            field=models.CharField(default=None, max_length=200, verbose_name="Referer"),
         ),
         migrations.AddField(
-            model_name='parser',
-            name='user_agent',
-            field=models.CharField(default=None, max_length=200, verbose_name='User Agent'),
+            model_name="parser",
+            name="user_agent",
+            field=models.CharField(default=None, max_length=200, verbose_name="User Agent"),
         ),
         migrations.AlterField(
-            model_name='parser',
-            name='response_code',
-            field=models.IntegerField(verbose_name='response code'),
+            model_name="parser",
+            name="response_code",
+            field=models.IntegerField(verbose_name="response code"),
         ),
     ]

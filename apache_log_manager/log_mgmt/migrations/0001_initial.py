@@ -7,20 +7,19 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Parser',
+            name="Parser",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ip_address', models.CharField(max_length=200, verbose_name='IP address')),
-                ('log_data', models.CharField(max_length=200)),
-                ('http_method', models.CharField(max_length=200)),
-                ('uri', models.CharField(max_length=200)),
-                ('response_code', models.CharField(max_length=200)),
-                ('response_size', models.CharField(max_length=200)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("ip_address", models.CharField(max_length=200, verbose_name="IP address")),
+                ("log_data", models.CharField(max_length=200)),
+                ("http_method", models.CharField(max_length=200)),
+                ("uri", models.CharField(max_length=200)),
+                ("response_code", models.CharField(max_length=200)),
+                ("response_size", models.CharField(max_length=200)),
             ],
         ),
     ]

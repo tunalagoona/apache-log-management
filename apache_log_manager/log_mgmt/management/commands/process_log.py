@@ -10,7 +10,7 @@ logging.basicConfig(
 
 
 class Command(BaseCommand):
-    help = "Processes the specified link containing Apache logs"
+    help = "Processes the specified link containing Apache logs \n \n"
 
     def add_arguments(self, parser) -> None:
         parser.add_argument("link", nargs="+", type=str)
