@@ -25,6 +25,9 @@ make -f docker/Makefile init
 # %h %l %u %{[%d/%b/%Y:%H:%M:%S %z]}t "%r" %>s %b "%{Referer}i" "%{User-agent}i"
 
 make -f docker/Makefile link=[LINK] load
+
+# For example:
+# make -f docker/Makefile link=http://www.almhuette-raith.at/apache-log/access.log load
 ```
 
 4. Finally to run the Django webserver, issue:
