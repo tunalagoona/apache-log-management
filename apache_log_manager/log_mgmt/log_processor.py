@@ -1,54 +1,80 @@
 import logging
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 import requests
+from tqdm import tqdm
 from apachelogs import LogParser
 
 from .entities import LogItem
-from .models import Parser
-
+from .models import ApacheLogs
 
 logger = logging.getLogger()
 
 
 class LogProcessor:
-    @staticmethod
-    def parse(link: str = None) -> Optional[List[LogItem]]:
-        """Download and parse Apache logs from the link."""
+    def __init__(self):
+        # Pattern for parsing Apache log entries
+        self.parser = LogParser('%h %l %u %{[%d/%b/%Y:%H:%M:%S %z]}t "%r" %>s %b "%{Referer}i" "%{User-agent}i"')
+
+    def populate_logs(self, link: str = None):
+        """Download Apache logs using the supplied link, then parse them and load into the database."""
         if link:
-            r = requests.get(link)
-            logger.info(f"Status code is {r.status_code}")
-            if r.status_code != 200:
+            response = requests.get(link)
+            logger.info(f"Status code is {response.status_code}")
+            if response.status_code != 200:
                 return None
 
-            parser_input = r.text
+            lines = response.text.splitlines()
 
-            # Pattern for parsing Apache log entries
-            parser = LogParser('%h %l %u %{[%d/%b/%Y:%H:%M:%S %z]}t "%r" %>s %b "%{Referer}i" "%{User-agent}i"')
+            with tqdm(total=len(lines), leave=False) as progress_bar:
+                progress_bar.set_description(f"Processing Apache log entries")
+                for line in lines:
+                    if line != "\n" and line != "":
+                        self.process_log_line(line)
+                    progress_bar.update()
 
-            logs = []
-            for line in parser_input.splitlines():
-                if line != "\n" and line != '':
-                    # Remove '-' from the end of the line before parsing
-                    entry = parser.parse(line[:-4])
-                    parsed_log_line = LogProcessor.format_apachelogs_entry(entry)
-                    logger.debug(f"parsed log line: {parsed_log_line}")
-                    logs.append(parsed_log_line)
+    def process_log_line(self, line: str):
+        """Parse the log line and insert it to the database."""
+        log_item = self.parse_log_line(line)
+        p = ApacheLogs(**log_item._asdict())
+        p.save()
 
-            return logs
+    def parse_log_line(self, line: str) -> LogItem:
+        """Parse the log line."""
+        # Removing '-' from the end of the line before parsing
+        line = line[:-4]
+
+        entry = self.parser.parse(line)
+        parsed_log_line = LogProcessor.convert_to_logitem(entry)
+        logger.debug(f"parsed log line: {parsed_log_line}")
+
+        return parsed_log_line
 
     @staticmethod
-    def format_apachelogs_entry(entry) -> LogItem:
-        """Reformat LogParser entry."""
-        http_method = entry.request_line.split()[0] if entry.request_line.split()[0] is not None else "-"
-        uri = entry.request_line.split()[1] if entry.request_line.split()[1] is not None else "-"
-        response_code = entry.final_status if entry.final_status is not None else "-"
-        response_size = entry.bytes_sent if entry.bytes_sent is not None else "-"
-        referer = entry.headers_in["Referer"] if entry.headers_in["Referer"] is not None else "-"
-        user_agent = (entry.headers_in["User-Agent"] if entry.headers_in["User-Agent"] is not None else "-")
-        date_and_time = entry.request_time_fields
-        log_date = LogProcessor.make_datetime(date_and_time)
+    def convert_to_logitem(entry) -> LogItem:
+        """Convert LogParser entry into LogItem."""
+
+        def sub(x: Optional):
+            return "-" if x is None else x
+
+        http_method = sub(entry.request_line.split()[0])
+        uri = sub(entry.request_line.split()[1])
+        response_code = sub(entry.final_status)
+        response_size = sub(entry.bytes_sent)
+        referer = sub(entry.headers_in["Referer"])
+        user_agent = sub(entry.headers_in["User-Agent"])
+
+        dt = entry.request_time_fields
+        log_date = datetime(
+            year=int(dt["year"]),
+            month=int(datetime.strptime(dt["abbrev_mon"], "%b").month),
+            day=int(dt["mday"]),
+            hour=int(dt["hour"]),
+            minute=int(dt["min"]),
+            second=int(dt["sec"]),
+            tzinfo=dt["timezone"],
+        )
 
         log_line = LogItem(
             ip_address=entry.remote_host,
@@ -61,23 +87,3 @@ class LogProcessor:
             user_agent=user_agent,
         )
         return log_line
-
-    @staticmethod
-    def make_datetime(date_and_time) -> datetime:
-        """Convert LogParser request_time_fields into datetime."""
-        log_date = datetime(
-            year=int(date_and_time["year"]),
-            month=int(datetime.strptime(date_and_time["abbrev_mon"], "%b").month),
-            day=int(date_and_time["mday"]),
-            hour=int(date_and_time["hour"]),
-            minute=int(date_and_time["min"]),
-            second=int(date_and_time["sec"]),
-            tzinfo=date_and_time["timezone"],
-        )
-        return log_date
-
-    @staticmethod
-    def write_to_db(logs: List[LogItem]):
-        for log in logs:
-            p = Parser(**log._asdict())
-            p.save()
