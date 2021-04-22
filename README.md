@@ -21,10 +21,10 @@ make -f docker/Makefile init
 
 3. To load Apache logs from the link use:
 ```
+make -f docker/Makefile link=[LINK] load
+
 # The Apache log file must be written in the following format:
 #     %h %l %u %{[%d/%b/%Y:%H:%M:%S %z]}t "%r" %>s %b "%{Referer}i" "%{User-agent}i"
-
-make -f docker/Makefile link=[LINK] load
 
 # For example:
 #     make -f docker/Makefile link=http://www.almhuette-raith.at/apache-log/access.log load
