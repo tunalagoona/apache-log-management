@@ -4,7 +4,7 @@ Apache-log-manager is a Django app for Apache log processing and analysis with t
 
 <img src="/extra/screenshot.png" alt="Django admin"/>
 
-Get Started
+### Get Started
 ===========
 
 The easiest way is to use the supplied Dockerfile.
@@ -40,7 +40,7 @@ make -f docker/Makefile app
 6. Enjoy!
 
 
-Performance
+### Performance
 ===========
 
 In general, insertion to the database takes approx. 3-4 min.
