@@ -5,7 +5,6 @@ Apache-log-manager is a Django app for Apache log processing and analysis with t
 <img src="/extra/screenshot.png" alt="Django admin"/>
 
 ### Get Started
-===========
 
 The easiest way is to use the supplied Dockerfile.
 
@@ -41,11 +40,10 @@ make -f docker/Makefile app
 
 
 ### Performance
-===========
 
-In general, insertion to the database takes approx. 3-4 min.
-To check the performance using flamegraph, issue the following command:
+Insertion of lines from [This example](http://www.almhuette-raith.at/apache-log/access.log) to the database takes approximately 3-4 min.
+To analyze the performance, you can use the following command:
 ```
 sudo py-spy record --subprocesses -o profile_b1.svg --pid XXX
 ```
-<img src="/extra/graph.png" alt="Performance flamegraph"/>
+<img src="/extra/profile_b1.svg" alt="Performance flamegraph">
