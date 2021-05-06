@@ -29,16 +29,23 @@ class LogProcessor:
 
             with tqdm(total=len(lines), leave=False) as progress_bar:
                 progress_bar.set_description(f"Processing Apache log entries")
+
+                batch_size = 128
+                objs = []
+
+                # Parse log lines and insert bulks to the database.
                 for line in lines:
                     if line != "\n" and line != "":
-                        self.process_log_line(line)
-                    progress_bar.update()
+                        log_item = self.parse_log_line(line)
+                        objs.append(ApacheLogs(**log_item._asdict()))
 
-    def process_log_line(self, line: str):
-        """Parse the log line and insert it to the database."""
-        log_item = self.parse_log_line(line)
-        p = ApacheLogs(**log_item._asdict())
-        p.save()
+                        if len(objs) == batch_size:
+                            ApacheLogs.objects.bulk_create(objs, batch_size)
+                            progress_bar.update(n=batch_size)
+                            objs.clear()
+
+                ApacheLogs.objects.bulk_create(objs, len(objs))
+                progress_bar.update(n=len(objs))
 
     def parse_log_line(self, line: str) -> LogItem:
         """Parse the log line."""
