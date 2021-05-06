@@ -38,3 +38,14 @@ make -f docker/Makefile app
 5. Go to [http://0.0.0.0:8000/admin/](http://0.0.0.0:8000/admin/) and use `user: admin, pass: 123456`.
 
 6. Enjoy!
+
+
+Performance
+===========
+
+In general, insertion to the database takes approx. 3-4 min.
+To check the performance using flamegraph, issue the following command:
+```
+sudo py-spy record --subprocesses -o profile_b1.svg --pid XXX
+```
+<img src="/extra/graph.png" alt="Performance flamegraph"/>
